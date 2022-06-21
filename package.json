@@ -10,6 +10,8 @@
   "author": "Ali",
   "license": "ISC",
   "dependencies": {
+    "app-module-path": "^2.2.0",
+    "auto-bind": "^4.0.0",
     "config": "^3.3.7",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
