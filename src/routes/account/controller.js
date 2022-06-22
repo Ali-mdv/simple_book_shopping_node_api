@@ -32,4 +32,35 @@ module.exports = new (class extends BaseController {
             data: _.omit(createUser, ["password"]),
         });
     }
+
+    async login(req, res, next) {
+        const user = await this.User.findUnique({
+            where: {
+                email: req.body.email,
+            },
+        });
+
+        if (!user) {
+            return this.response({
+                res,
+                code: 400,
+                message: "Invalid Email or Password",
+            });
+        }
+
+        const isValid = await bcrypt.compare(req.body.password, user.password);
+        if (!isValid) {
+            return this.response({
+                res,
+                code: 400,
+                message: "Invalid Email or Password",
+            });
+        }
+
+        return this.response({
+            res,
+            message: "Login Successfully",
+            data: _.omit(user, ["password"]),
+        });
+    }
 })();

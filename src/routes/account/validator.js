@@ -58,4 +58,19 @@ module.exports = new (class {
                 .withMessage("Phone Number format is wrong"),
         ];
     }
+
+    login() {
+        return [
+            check("email")
+                .notEmpty()
+                .withMessage("Email is required")
+                .bail()
+                .isEmail()
+                .withMessage("Email format is wrong"),
+
+            check("password")
+                .notEmpty()
+                .withMessage("Password is required"),
+        ];
+    }
 })();

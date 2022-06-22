@@ -9,4 +9,11 @@ router.post(
     controller.register
 );
 
+router.post(
+    "/login",
+    validator.login(),
+    controller.validate,
+    controller.login
+);
+
 module.exports = router;
