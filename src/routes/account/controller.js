@@ -1,5 +1,6 @@
 const BaseController = require("./../controller");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 
 module.exports = new (class extends BaseController {
@@ -57,10 +58,24 @@ module.exports = new (class extends BaseController {
             });
         }
 
+        const accessToken = jwt.sign(
+            { id: user.id },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN }
+        );
+        const refreshToken = jwt.sign(
+            { id: user.id },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN }
+        );
+
         return this.response({
             res,
             message: "Login Successfully",
-            data: _.omit(user, ["password"]),
+            data: {
+                accessToken,
+                refreshToken,
+            },
         });
     }
 })();

@@ -12,7 +12,6 @@ module.exports = class {
 
     validarionBody(req, res) {
         const result = validationResult(req);
-        console.log(result);
         if (!result.isEmpty()) {
             const errors = result.array().map((v) => v.msg);
             const messages = [];

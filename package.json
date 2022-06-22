@@ -19,6 +19,7 @@
     "express": "^4.18.1",
     "express-validator": "^6.14.2",
     "helmet": "^5.1.0",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0"
   },
