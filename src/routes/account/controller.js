@@ -60,12 +60,12 @@ module.exports = new (class extends BaseController {
 
         const accessToken = jwt.sign(
             { id: user.id },
-            process.env.JWT_SECRET_KEY,
+            process.env.JWT_SECRET_ACCESS,
             { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN }
         );
         const refreshToken = jwt.sign(
             { id: user.id },
-            process.env.JWT_SECRET_KEY,
+            process.env.JWT_SECRET_REFRESH,
             { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN }
         );
 
