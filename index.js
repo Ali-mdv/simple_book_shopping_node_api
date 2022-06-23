@@ -20,6 +20,16 @@ if (app.get("env") === "development") {
 
 app.use(router);
 
+process.on("uncaughtException", (error) => {
+    console.log(error.message, error);
+    process.exit(1);
+});
+
+process.on("unhandledRejection", (reason) => {
+    console.log(reason.message, reason);
+    process.exit(1);
+});
+
 app.listen(port, () => {
     console.log(`app on port ${port}`);
     console.log(`http://localhost:${port}`);
