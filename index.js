@@ -1,5 +1,6 @@
 require("app-module-path").addPath(__dirname);
 const express = require("express");
+require("express-async-errors");
 require("dotenv").config();
 const morgan = require("morgan");
 const config = require("config");
