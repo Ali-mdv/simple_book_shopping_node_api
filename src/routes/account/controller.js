@@ -2,6 +2,8 @@ const BaseController = require("./../controller");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+const winston = require("winston");
 const _ = require("lodash");
 
 module.exports = new (class extends BaseController {
@@ -32,6 +34,26 @@ module.exports = new (class extends BaseController {
                 user_id: createUser.id,
                 token: crypto.randomBytes(32).toString("hex"),
             },
+        });
+
+        let transporter = nodemailer.createTransport({
+            service: "gmail",
+            secure: true,
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+        const mailData = {
+            from: process.env.EMAIL_USER,
+            to: createUser.email,
+            subject: "Email Verification",
+            html: `<p><a href="http://localhost:${process.env.PORT}/account/activate/${createToken.token}">clicked to activate account</a></p>`,
+        };
+        transporter.sendMail(mailData, (err, info) => {
+            if (err) {
+                winston.error(err.message);
+            }
         });
 
         return this.response({
