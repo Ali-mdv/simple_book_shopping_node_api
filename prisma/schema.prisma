@@ -21,4 +21,11 @@ model User {
   is_admin     Boolean  @default(false)
   is_staff     Boolean  @default(false)
   date_joined  DateTime @default(now())
+  token        Token?
+}
+
+model Token {
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id Int    @unique
+  token   String @unique
 }

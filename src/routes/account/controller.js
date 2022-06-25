@@ -1,6 +1,7 @@
 const BaseController = require("./../controller");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const _ = require("lodash");
 
 module.exports = new (class extends BaseController {
@@ -16,13 +17,20 @@ module.exports = new (class extends BaseController {
         const salt = await bcrypt.genSalt(10);
         newUser.password1 = await bcrypt.hash(newUser.password1, salt);
 
-        const createUser = await this.User.create({
+        const createUser = await this.prisma.user.create({
             data: {
                 first: newUser.first ? newUser.first : null,
                 last: newUser.last ? newUser.last : null,
                 password: newUser.password1,
                 email: newUser.email,
                 phone_number: newUser.phone_number,
+            },
+        });
+
+        const createToken = await this.prisma.token.create({
+            data: {
+                user_id: createUser.id,
+                token: crypto.randomBytes(32).toString("hex"),
             },
         });
 
@@ -35,7 +43,7 @@ module.exports = new (class extends BaseController {
     }
 
     async login(req, res, next) {
-        const user = await this.User.findUnique({
+        const user = await this.prisma.user.findUnique({
             where: {
                 email: req.body.email,
             },
@@ -76,6 +84,41 @@ module.exports = new (class extends BaseController {
                 accessToken,
                 refreshToken,
             },
+        });
+    }
+
+    async activateAccount(req, res, next) {
+        const token = await this.prisma.token.findUnique({
+            where: {
+                token: req.params.token,
+            },
+        });
+
+        if (!token) {
+            return this.response({
+                res,
+                message: "Invalid Token",
+                code: 400,
+            });
+        }
+        const user = await this.prisma.user.update({
+            where: {
+                id: token.user_id,
+            },
+            data: {
+                is_active: true,
+            },
+        });
+
+        await this.prisma.token.delete({
+            where: {
+                token: req.params.token,
+            },
+        });
+
+        return this.response({
+            res,
+            message: "Activate Account Successfully",
         });
     }
 })();

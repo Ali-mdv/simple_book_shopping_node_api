@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 module.exports = class {
     constructor() {
         autoBind(this);
-        this.User = prisma.user;
+        this.prisma = prisma;
     }
 
     validarionBody(req, res) {
