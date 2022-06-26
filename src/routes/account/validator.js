@@ -73,4 +73,41 @@ module.exports = new (class {
                 .withMessage("Password is required"),
         ];
     }
+
+    reset_password(){
+        return [
+            check("email")
+            .notEmpty()
+            .withMessage("Email is required")
+            .bail()
+            .isEmail()
+            .withMessage("Email format is wrong"),
+        ]
+    }
+
+    confirm_reset_password(){
+        return [
+            check("password1")
+            .notEmpty()
+            .withMessage("Password is required")
+            .bail()
+            .isStrongPassword({ minLength: 8, maxLength: 128 })
+            .withMessage(
+                "Password must be 8 character contain at least (one uppercase,one lower case,one special character and one number)"
+            ),
+
+            check("password2")
+                .notEmpty()
+                .withMessage("Password Confirmation is required")
+                .bail()
+                .custom((val, { req }) => {
+                    if (val !== req.body.password1) {
+                        throw new Error(
+                            "Password Confirmation does not match Password"
+                        );
+                    }
+                    return true;
+                }),
+        ]
+    }
 })();

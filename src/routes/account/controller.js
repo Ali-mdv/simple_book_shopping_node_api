@@ -143,4 +143,84 @@ module.exports = new (class extends BaseController {
             message: "Activate Account Successfully",
         });
     }
+
+    async reset_password(req, res, next) {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email: req.body.email,
+            },
+        });
+        if (user) {
+            const token = await this.prisma.token.findUnique({
+                where: {
+                    user_id: user.id,
+                },
+            });
+            if (!token) {
+                token = await this.prisma.token.create({
+                    data: {
+                        user_id: user.id,
+                        token: crypto.randomBytes(32).toString("hex"),
+                    },
+                });
+            }
+
+            let transporter = nodemailer.createTransport({
+                service: "gmail",
+                secure: true,
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASSWORD,
+                },
+            });
+            const mailData = {
+                from: process.env.EMAIL_USER,
+                to: user.email,
+                subject: "Email Verification",
+                html: `<p><a href="http://localhost:${process.env.PORT}/account/confirm_reset_password/${token.token}">clicked to reset password</a></p>`,
+            };
+            transporter.sendMail(mailData, (err, info) => {
+                if (err) {
+                    winston.error(err.message);
+                }
+            });
+        }
+
+        return this.response({
+            res,
+            message: "send reset password link to your email",
+        });
+    }
+
+    async confirm_reset_password(req, res, next) {
+        const token = await this.prisma.token.findUnique({
+            where: {
+                token: req.params.token,
+            },
+        });
+        if (token) {
+            const salt = await bcrypt.genSalt(10);
+            const password = await bcrypt.hash(req.body.password1, salt);
+
+            const user = await this.prisma.user.update({
+                where: {
+                    id: token.user_id,
+                },
+                data: {
+                    password: password,
+                },
+            });
+            await this.prisma.token.delete({
+                where: {
+                    token: token.token,
+                },
+            });
+        }
+
+        return this.response({
+            res,
+            message: token ? "Reset Password Successfully" : "Token Invalid",
+            code: token ? 200 : 400,
+        });
+    }
 })();
