@@ -1,6 +1,7 @@
 const autoBind = require("auto-bind");
 const { PrismaClient } = require("@prisma/client");
 const { validationResult } = require("express-validator");
+const nodemailer = require("nodemailer");
 
 const prisma = new PrismaClient();
 
@@ -42,6 +43,30 @@ module.exports = class {
             message,
             code,
             data,
+        });
+    }
+
+    sendEmail({ from, to, subject, html }) {
+        let transporter = nodemailer.createTransport({
+            service: "gmail",
+            secure: true,
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+
+        const mailData = {
+            from,
+            to,
+            subject,
+            html,
+        };
+
+        transporter.sendMail(mailData, (err, info) => {
+            if (err) {
+                winston.error(err.message);
+            }
         });
     }
 };

@@ -2,8 +2,6 @@ const BaseController = require("./../controller");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
-const winston = require("winston");
 const _ = require("lodash");
 
 module.exports = new (class extends BaseController {
@@ -36,24 +34,11 @@ module.exports = new (class extends BaseController {
             },
         });
 
-        let transporter = nodemailer.createTransport({
-            service: "gmail",
-            secure: true,
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASSWORD,
-            },
-        });
-        const mailData = {
+        this.sendEmail({
             from: process.env.EMAIL_USER,
             to: createUser.email,
             subject: "Email Verification",
             html: `<p><a href="http://localhost:${process.env.PORT}/account/activate/${createToken.token}">clicked to activate account</a></p>`,
-        };
-        transporter.sendMail(mailData, (err, info) => {
-            if (err) {
-                winston.error(err.message);
-            }
         });
 
         return this.response({
@@ -151,7 +136,7 @@ module.exports = new (class extends BaseController {
             },
         });
         if (user) {
-            const token = await this.prisma.token.findUnique({
+            let token = await this.prisma.token.findUnique({
                 where: {
                     user_id: user.id,
                 },
@@ -164,25 +149,11 @@ module.exports = new (class extends BaseController {
                     },
                 });
             }
-
-            let transporter = nodemailer.createTransport({
-                service: "gmail",
-                secure: true,
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASSWORD,
-                },
-            });
-            const mailData = {
+            this.sendEmail({
                 from: process.env.EMAIL_USER,
                 to: user.email,
                 subject: "Email Verification",
                 html: `<p><a href="http://localhost:${process.env.PORT}/account/confirm_reset_password/${token.token}">clicked to reset password</a></p>`,
-            };
-            transporter.sendMail(mailData, (err, info) => {
-                if (err) {
-                    winston.error(err.message);
-                }
             });
         }
 
