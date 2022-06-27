@@ -29,3 +29,29 @@ model Token {
   user_id Int    @unique
   token   String @unique
 }
+
+model Author {
+  id          Int     @id @default(autoincrement())
+  first       String  @db.VarChar(40)
+  middle      String? @db.VarChar(40)
+  last        String  @db.VarChar(40)
+  description String? @db.VarChar(256)
+  books       Book[]
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  title String @unique @db.VarChar(64)
+  books Book[]
+}
+
+model Book {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(64)
+  description String?  @db.VarChar(256)
+  author      Author   @relation(fields: [author_id], references: [id])
+  author_id   Int
+  category    Category @relation(fields: [category_id], references: [id])
+  category_id Int
+  counter     Int
+}
