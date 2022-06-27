@@ -2,6 +2,7 @@ const router = require("express").Router();
 const homeRouter = require("./home");
 const accountRouter = require("./account");
 const profileRouter = require("./profile");
+const productRouter = require("./product");
 const { isAuthenticated } = require("./../middlewares/auth");
 const { handledAsyncError } = require("./../middlewares/error_handling");
 
@@ -13,6 +14,8 @@ router.use("/profile",
     isAuthenticated,
     profileRouter
 );
+
+router.use("/product", productRouter);
 
 router.use(handledAsyncError);
 
