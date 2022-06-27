@@ -35,6 +35,7 @@ model Author {
   first       String  @db.VarChar(40)
   middle      String? @db.VarChar(40)
   last        String  @db.VarChar(40)
+  slug        String  @unique @db.VarChar(64)
   description String? @db.VarChar(256)
   books       Book[]
 }
@@ -42,12 +43,14 @@ model Author {
 model Category {
   id    Int    @id @default(autoincrement())
   title String @unique @db.VarChar(64)
+  slug  String @unique @db.VarChar(64)
   books Book[]
 }
 
 model Book {
   id          Int      @id @default(autoincrement())
   title       String   @db.VarChar(64)
+  slug        String   @unique @db.VarChar(64)
   description String?  @db.VarChar(256)
   author      Author   @relation(fields: [author_id], references: [id])
   author_id   Int
