@@ -3,7 +3,8 @@ const homeRouter = require("./home");
 const accountRouter = require("./account");
 const profileRouter = require("./profile");
 const productRouter = require("./product");
-const { isAuthenticated } = require("./../middlewares/auth");
+const adminRouter = require("./admin");
+const { isAuthenticated, isAdmin } = require("./../middlewares/auth");
 const { handledAsyncError } = require("./../middlewares/error_handling");
 
 router.use("/", homeRouter);
@@ -16,6 +17,14 @@ router.use("/profile",
 );
 
 router.use("/product", productRouter);
+
+router.use(
+    "/admin",
+    isAuthenticated,
+    isAdmin,
+    adminRouter
+);
+
 
 router.use(handledAsyncError);
 

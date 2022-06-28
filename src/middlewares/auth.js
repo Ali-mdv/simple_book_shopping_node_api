@@ -30,6 +30,17 @@ const isAuthenticated = async (req, res, next) => {
     }
 };
 
+const isAdmin = async (req, res, next) => {
+    if (!req.user.is_admin) {
+        return res.status(403).json({
+            message: "Accress Denied",
+            code: 403,
+        });
+    }
+    next();
+};
+
 module.exports = {
     isAuthenticated,
+    isAdmin,
 };
