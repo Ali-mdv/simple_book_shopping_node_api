@@ -322,4 +322,119 @@ module.exports = new (class extends BaseController {
             code: 204,
         });
     }
+
+    ///////////////////////////////////////////////////////////////
+    //controller for book model
+    async getBookList(req, res, next) {
+        const books = await this.prisma.book.findMany({
+            include: {
+                author: true,
+                category: true,
+            },
+        });
+
+        this.response({
+            res,
+            message: "books list",
+            data: books,
+        });
+    }
+
+    async getBookSingle(req, res, next) {
+        const book = await this.prisma.book.findUnique({
+            where: {
+                slug: req.params.slug,
+            },
+            include: {
+                author: true,
+                category: true,
+            },
+        });
+
+        // if book not exist return error 404
+        if (!book) return next();
+
+        this.response({
+            res,
+            message: `book ${book.title}`,
+            data: book,
+        });
+    }
+
+    async createBook(req, res, next) {
+        //create slug with title
+        const slug = slugify(req.body.title, { lower: true });
+
+        const newBook = await this.prisma.book.create({
+            data: {
+                title: req.body.title,
+                slug: slug,
+                description: req.body.description || null,
+                author_id: Number(req.body.author),
+                category_id: Number(req.body.category),
+                counter: Number(req.body.counter),
+            },
+        });
+
+        this.response({
+            res,
+            message: `Book ${newBook.title} created`,
+            data: newBook,
+        });
+    }
+
+    async updateBook(req, res, next) {
+        let book = await this.prisma.book.findUnique({
+            where: {
+                slug: req.params.slug,
+            },
+        });
+        // if book not exist return error 404
+        if (!book) return next();
+
+        //create slug with title
+        const slug = slugify(req.body.title, { lower: true });
+
+        book = await this.prisma.book.update({
+            where: {
+                slug: req.params.slug,
+            },
+            data: {
+                title: req.body.title || book.title,
+                slug: slug,
+                description: req.body.description || book.description,
+                author_id: Number(req.body.author) || book.author,
+                category_id: Number(req.body.category) || book.category,
+                counter: Number(req.body.counter) || book.counter,
+            },
+        });
+
+        this.response({
+            res,
+            message: `book ${book.title} updated`,
+            data: book,
+        });
+    }
+
+    async deleteBook(req, res, next) {
+        let book = await this.prisma.book.findUnique({
+            where: {
+                slug: req.params.slug,
+            },
+        });
+
+        if (!book) return next();
+
+        await this.prisma.book.delete({
+            where: {
+                slug: req.params.slug,
+            },
+        });
+
+        this.response({
+            res,
+            message: "Book successfully deleted",
+            code: 204,
+        });
+    }
 })();

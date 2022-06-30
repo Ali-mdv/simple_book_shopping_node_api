@@ -179,4 +179,145 @@ module.exports = new (class {
                 }),
         ];
     }
+
+    ///////////////////////////////////////////////////////////////
+    // validator for book model
+    createBook() {
+        return [
+            check("title")
+                .notEmpty()
+                .withMessage("Title is required")
+                .bail()
+                .isLength({
+                    max: 64,
+                })
+                .withMessage("max character for Title is 64")
+                .custom(async (value, { req }) => {
+                    const slug = slugify(value, { lower: true });
+                    const book = await prisma.book.findUnique({
+                        where: {
+                            slug,
+                        },
+                    });
+                    if (book)
+                        throw new Error("Book with this title Already Exist");
+                    return value;
+                }),
+            check("description")
+                .isLength({
+                    max: 256,
+                })
+                .withMessage("max character for Description is 256"),
+
+            check("author")
+                .notEmpty()
+                .withMessage("Author is required")
+                .bail()
+                .isNumeric()
+                .withMessage("Author must be Number(ID)")
+                .bail()
+                .custom(async (value) => {
+                    const author = await prisma.author.findUnique({
+                        where: {
+                            id: Number(value),
+                        },
+                    });
+                    if (!author) throw new Error("author does not exist");
+                    return value;
+                }),
+            check("category")
+                .notEmpty()
+                .withMessage("Category is required")
+                .bail()
+                .isNumeric()
+                .withMessage("Category must be Number(ID)")
+                .bail()
+                .custom(async (value) => {
+                    const category = await prisma.category.findUnique({
+                        where: {
+                            id: Number(value),
+                        },
+                    });
+                    if (!category) throw new Error("Category does not exist");
+                    return value;
+                }),
+
+            check("counter")
+                .notEmpty()
+                .withMessage("Counter is required")
+                .bail()
+                .isNumeric()
+                .withMessage("Counter must be Number"),
+        ];
+    }
+
+    updateBook() {
+        return [
+            check("title")
+                .notEmpty()
+                .withMessage("Title is required")
+                .bail()
+                .isLength({
+                    max: 64,
+                })
+                .withMessage("max character for Title is 64")
+                .custom(async (value, { req }) => {
+                    const slug = slugify(value, { lower: true });
+                    const book = await prisma.book.findUnique({
+                        where: {
+                            slug,
+                        },
+                    });
+                    // if req.params.slug === book.slug indicates that the book slug taken is the same as the other book slug
+                    if (book && req.params.slug !== book.slug)
+                        throw new Error("book with this title already exist");
+                    return value;
+                }),
+            check("description")
+                .isLength({
+                    max: 256,
+                })
+                .withMessage("max character for Description is 256"),
+
+            check("author")
+                .notEmpty()
+                .withMessage("Author is required")
+                .bail()
+                .isNumeric()
+                .withMessage("Author must be Number(ID)")
+                .bail()
+                .custom(async (value) => {
+                    const author = await prisma.author.findUnique({
+                        where: {
+                            id: Number(value),
+                        },
+                    });
+                    if (!author) throw new Error("Author does not exist");
+                    return value;
+                }),
+            check("category")
+                .notEmpty()
+                .withMessage("Category is required")
+                .bail()
+                .isNumeric()
+                .withMessage("Category must be Number(ID)")
+                .bail()
+                .custom(async (value) => {
+                    const category = await prisma.category.findUnique({
+                        where: {
+                            id: Number(value),
+                        },
+                    });
+                    if (!category) throw new Error("Category does not exist");
+                    return value;
+                }),
+
+            check("counter")
+                .notEmpty()
+                .withMessage("Counter is required")
+                .bail()
+                .isNumeric()
+                .withMessage("Counter must be Number"),
+        ];
+    }
 })();

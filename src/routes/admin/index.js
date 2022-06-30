@@ -94,4 +94,37 @@ router.delete(
 )
 
 
+///////////////////////////////////////////////////////////////
+// get-create-update-delete book model
+router.get(
+    "/books",
+    controller.getBookList
+);
+
+router.get(
+    "/book/:slug",
+    controller.getBookSingle
+);
+
+
+router.post(
+    "/book/create",
+    validator.createBook(),
+    controller.validate,
+    controller.createBook
+);
+
+router.put(
+    "/book/:slug",
+    validator.updateBook(),
+    controller.validate,
+    controller.updateBook
+);
+
+router.delete(
+    "/book/:slug",
+    controller.deleteBook
+)
+
+
 module.exports = router;
