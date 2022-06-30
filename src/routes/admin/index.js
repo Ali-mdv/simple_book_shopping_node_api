@@ -60,4 +60,38 @@ router.delete(
     controller.deleteAuthor
 )
 
+
+///////////////////////////////////////////////////////////////
+// get-create-update-delete category model
+router.get(
+    "/categories",
+    controller.getCategoryList
+);
+
+router.get(
+    "/category/:slug",
+    controller.getCategorySingle
+);
+
+
+router.post(
+    "/category/create",
+    validator.createCategory(),
+    controller.validate,
+    controller.createCategory
+);
+
+router.put(
+    "/category/:slug",
+    validator.updateCategory(),
+    controller.validate,
+    controller.updateCategory
+);
+
+router.delete(
+    "/category/:slug",
+    controller.deleteCategory
+)
+
+
 module.exports = router;

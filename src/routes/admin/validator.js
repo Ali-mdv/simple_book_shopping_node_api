@@ -128,4 +128,55 @@ module.exports = new (class {
                 .withMessage("max character for Description is 256"),
         ];
     }
+
+    ///////////////////////////////////////////////////////////////
+    // validator for author model
+    createCategory() {
+        return [
+            check("title")
+                .notEmpty()
+                .withMessage("Title is required")
+                .bail()
+                .isLength({
+                    max: 64,
+                })
+                .withMessage("max character for Title is 64")
+                .custom(async (value, { req }) => {
+                    const slug = slugify(value, { lower: true });
+                    const category = await prisma.category.findUnique({
+                        where: {
+                            slug,
+                        },
+                    });
+                    if (category) throw new Error("Category Already Exist");
+                    return value;
+                }),
+        ];
+    }
+    updateCategory() {
+        return [
+            check("title")
+                .notEmpty()
+                .withMessage("Title is required")
+                .bail()
+                .isLength({
+                    max: 64,
+                })
+                .withMessage("max character for Title is 64")
+                .custom(async (value, { req }) => {
+                    const slug = slugify(value, { lower: true });
+                    const category = await prisma.category.findUnique({
+                        where: {
+                            slug,
+                        },
+                    });
+                    // if req.params.slug === category.slug indicates that the category slug taken is the same as the other category slug
+                    if (category && req.params.slug !== category.slug)
+                        throw new Error(
+                            "category with this title already exist"
+                        );
+                    return value;
+                }),
+        ];
+    }
 })();

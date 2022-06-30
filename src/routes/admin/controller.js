@@ -102,6 +102,7 @@ module.exports = new (class extends BaseController {
                 id: true,
                 first: true,
                 last: true,
+                slug: true,
                 description: true,
             },
         });
@@ -220,6 +221,104 @@ module.exports = new (class extends BaseController {
         this.response({
             res,
             message: "author successfully deleted",
+            code: 204,
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    //controller for category model
+    async getCategoryList(req, res, next) {
+        const categories = await this.prisma.category.findMany();
+
+        this.response({
+            res,
+            message: "categories list",
+            data: categories,
+        });
+    }
+
+    async getCategorySingle(req, res, next) {
+        const category = await this.prisma.category.findUnique({
+            where: {
+                slug: req.params.slug,
+            },
+        });
+
+        // if category not exist return error 404
+        if (!category) return next();
+
+        this.response({
+            res,
+            message: `category ${category.title}`,
+            data: category,
+        });
+    }
+
+    async createCategory(req, res, next) {
+        //create slug with title
+        const slug = slugify(req.body.title, { lower: true });
+
+        const newCategory = await this.prisma.category.create({
+            data: {
+                title: req.body.title,
+                slug: slug,
+            },
+        });
+
+        this.response({
+            res,
+            message: `Category ${newCategory.title} created`,
+            data: newCategory,
+        });
+    }
+
+    async updateCategory(req, res, next) {
+        let category = await this.prisma.category.findUnique({
+            where: {
+                slug: req.params.slug,
+            },
+        });
+        // if category not exist return error 404
+        if (!category) return next();
+
+        //create slug with title
+        const slug = slugify(req.body.title, { lower: true });
+
+        category = await this.prisma.category.update({
+            where: {
+                slug: req.params.slug,
+            },
+            data: {
+                title: req.body.title,
+                slug: slug,
+            },
+        });
+
+        this.response({
+            res,
+            message: `category ${category.title} updated`,
+            data: category,
+        });
+    }
+
+    async deleteCategory(req, res, next) {
+        let category = await this.prisma.category.findUnique({
+            where: {
+                slug: req.params.slug,
+            },
+        });
+
+        if (!category) return next();
+
+        await this.prisma.category.delete({
+            where: {
+                slug: req.params.slug,
+            },
+        });
+
+        this.response({
+            res,
+            message: "Category successfully deleted",
             code: 204,
         });
     }
