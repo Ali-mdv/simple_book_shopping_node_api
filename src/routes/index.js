@@ -4,6 +4,7 @@ const accountRouter = require("./account");
 const profileRouter = require("./profile");
 const productRouter = require("./product");
 const adminRouter = require("./admin");
+const searchRouter = require("./search");
 const { isAuthenticated, isAdmin } = require("./../middlewares/auth");
 const { handledAsyncError } = require("./../middlewares/error_handling");
 
@@ -24,6 +25,8 @@ router.use(
     isAdmin,
     adminRouter
 );
+
+router.use("/search", searchRouter);
 
 
 router.use(handledAsyncError);
