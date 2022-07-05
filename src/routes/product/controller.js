@@ -3,6 +3,11 @@ const BaseController = require("./../controller");
 module.exports = new (class extends BaseController {
     async productList(req, res, next) {
         const products = await this.prisma.book.findMany({
+            where: {
+                title: {
+                    contains: req.query.title,
+                },
+            },
             include: {
                 category: true,
                 author: true,
@@ -10,7 +15,10 @@ module.exports = new (class extends BaseController {
         });
         this.response({
             res,
-            message: "All Products",
+            code: products.length > 0 ? 200 : 404,
+            message: req.query.title
+                ? `search product by < ${req.query.title} > title`
+                : "All Products",
             data: products,
         });
     }
@@ -28,7 +36,7 @@ module.exports = new (class extends BaseController {
         if (!product) return next();
         this.response({
             res,
-            message: "All Products",
+            message: `${product.title} Book`,
             data: product,
         });
     }
