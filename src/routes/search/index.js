@@ -7,4 +7,9 @@ router.get(
     controller.productListInCategory
 )
 
+router.get(
+    "/author/:slug",
+    controller.productListInAuthor
+)
+
 module.exports = router;
