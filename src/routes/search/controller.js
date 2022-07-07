@@ -1,6 +1,17 @@
 const BaseController = require("./../controller");
 
 module.exports = new (class extends BaseController {
+    ///////////////////////////////////////////////////////////////
+    //controller for category model
+    async categoryList(req, res, next) {
+        const categories = await this.prisma.category.findMany({});
+        this.response({
+            res,
+            message: "All Categories",
+            data: categories,
+        });
+    }
+
     async productListInCategory(req, res, next) {
         const category = await this.prisma.category.findUnique({
             where: {
@@ -29,6 +40,17 @@ module.exports = new (class extends BaseController {
                 : `all product in < ${category.title} > category`,
             code: products.length > 0 ? 200 : 404,
             data: products,
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    //controller for author model
+    async authorList(req, res, next) {
+        const authors = await this.prisma.author.findMany({});
+        this.response({
+            res,
+            message: "All Authors",
+            data: authors,
         });
     }
 
