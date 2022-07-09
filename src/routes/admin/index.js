@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const controller = require("./controller");
 const validator = require("./validator");
+const multer = require('multer/upload_file');
+const { pictureValidate } = require("src/middlewares/multer_file_validate");
 
 
 ///////////////////////////////////////////////////////////////
@@ -109,6 +111,8 @@ router.get(
 
 router.post(
     "/book/create",
+    multer.single("picture"),
+    pictureValidate,
     validator.createBook(),
     controller.validate,
     controller.createBook
@@ -116,6 +120,8 @@ router.post(
 
 router.put(
     "/book/:slug",
+    multer.single("picture"),
+    pictureValidate,
     validator.updateBook(),
     controller.validate,
     controller.updateBook

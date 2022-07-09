@@ -1,6 +1,8 @@
 const { check } = require("express-validator");
 const { PrismaClient } = require("@prisma/client");
 const slugify = require("slugify");
+const { extname } = require("path");
+const config = require("config");
 
 const prisma = new PrismaClient();
 
@@ -248,6 +250,20 @@ module.exports = new (class {
                 .bail()
                 .isNumeric()
                 .withMessage("Counter must be Number"),
+
+            check("picture")
+                .notEmpty()
+                .withMessage("Picture is required")
+                .bail()
+                .custom((value, { req }) => {
+                    if (!extname(value) in config.get("picture.ext")) {
+                        throw new Error("picture format is wrong");
+                    }
+                    if (req.file.size > config.get("picture.size")) {
+                        throw new Error("max size for Picture is 1 Megabyte");
+                    }
+                    return value;
+                }),
         ];
     }
 
@@ -318,6 +334,20 @@ module.exports = new (class {
                 .bail()
                 .isNumeric()
                 .withMessage("Counter must be Number"),
+
+            check("picture")
+                .notEmpty()
+                .withMessage("Picture is required")
+                .bail()
+                .custom((value, { req }) => {
+                    if (!extname(value) in config.get("picture.ext")) {
+                        throw new Error("picture format is wrong");
+                    }
+                    if (req.file.size > config.get("picture.size")) {
+                        throw new Error("max size for Picture is 1 Megabyte");
+                    }
+                    return value;
+                }),
         ];
     }
 })();

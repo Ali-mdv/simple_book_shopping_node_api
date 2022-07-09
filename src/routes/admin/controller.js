@@ -373,6 +373,7 @@ module.exports = new (class extends BaseController {
                 author_id: Number(req.body.author),
                 category_id: Number(req.body.category),
                 counter: Number(req.body.counter),
+                picture: req.body.picture,
             },
         });
 
@@ -406,6 +407,7 @@ module.exports = new (class extends BaseController {
                 author_id: Number(req.body.author) || book.author,
                 category_id: Number(req.body.category) || book.category,
                 counter: Number(req.body.counter) || book.counter,
+                picture: req.body.picture || book.picture,
             },
         });
 

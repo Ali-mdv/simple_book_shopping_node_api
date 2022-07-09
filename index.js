@@ -13,6 +13,7 @@ const port = process.env.PORT || config.get("PORT");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname + "/static"));
 app.use(helmet());
 
 winston.add(
