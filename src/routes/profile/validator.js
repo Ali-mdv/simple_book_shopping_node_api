@@ -30,4 +30,51 @@ module.exports = new (class {
                 }),
         ];
     }
+
+    ///////////////////////////////////////////////////////////////
+    //validator for address model
+    addressCreateUpdate() {
+        return [
+            check("city")
+                .notEmpty()
+                .withMessage("City is required")
+                .isAlpha()
+                .bail()
+                .withMessage("City is Invalid")
+                .bail()
+                .isLength({ max: 30 })
+                .withMessage("max character for City is 30"),
+
+            check("address")
+                .notEmpty()
+                .withMessage("Address is required")
+                .bail()
+                .isLength({ max: 255 })
+                .withMessage("max character for Address is 255"),
+
+            check("no")
+                .notEmpty()
+                .withMessage("NO is required")
+                .bail()
+                .isLength({ max: 10 })
+                .withMessage("max character for NO is 10"),
+
+            check("unit")
+                .notEmpty()
+                .withMessage("Unit is required")
+                .bail()
+                .isNumeric()
+                .withMessage("NO must be Number")
+                .bail()
+                .isLength({ max: 10 })
+                .withMessage("max character for unit is 10"),
+
+            check("postal_code")
+                .notEmpty()
+                .withMessage("Postal Code is required")
+                .bail()
+                .isLength({ max: 40 })
+                .withMessage("max character for Postal Code is 40"),
+        ];
+    }
 })();
