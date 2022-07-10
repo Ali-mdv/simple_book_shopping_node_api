@@ -34,6 +34,16 @@ module.exports = new (class extends BaseController {
             },
         });
 
+        const createCostomer = await this.prisma.costomer.create({
+            data: {
+                id: createUser.id,
+                first: newUser.first || null,
+                last: newUser.last || null,
+                email: newUser.email,
+                phone_number: newUser.phone_number,
+            },
+        });
+
         this.sendEmail({
             from: process.env.EMAIL_USER,
             to: createUser.email,

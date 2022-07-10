@@ -12,7 +12,7 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
+  id           String   @id @default(uuid())
   first        String?  @db.VarChar(40)
   last         String?  @db.VarChar(40)
   password     String   @db.VarChar(128)
@@ -27,7 +27,7 @@ model User {
 
 model Token {
   user    User   @relation(fields: [user_id], references: [id])
-  user_id Int    @unique
+  user_id String @unique
   token   String @unique
 }
 
@@ -59,4 +59,24 @@ model Book {
   category_id Int
   counter     Int
   picture     String
+}
+
+model Costomer {
+  id        String    @id @default(uuid())
+  first     String?   @db.VarChar(40)
+  last      String?   @db.VarChar(40)
+  password  String    @db.VarChar(128)
+  email     String    @unique @db.VarChar(60)
+  addresses Address[]
+}
+
+model Address {
+  id          Int       @id @default(autoincrement())
+  city        String    @db.VarChar(30)
+  address     String    @db.VarChar(255)
+  no          String    @db.VarChar(10)
+  unit        Int
+  postal_code String    @db.VarChar(40)
+  costomer    Costomer? @relation(fields: [costomer_id], references: [id])
+  costomer_id String?
 }
