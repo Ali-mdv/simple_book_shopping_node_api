@@ -66,7 +66,7 @@ module.exports = new (class extends BaseController {
                 order_id: order.id,
                 book_id: book.id,
                 price: book.price,
-                count: req.body.count,
+                count: Number(req.body.count),
             },
         });
         this.response({

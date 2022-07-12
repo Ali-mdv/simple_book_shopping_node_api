@@ -374,6 +374,7 @@ module.exports = new (class extends BaseController {
                 category_id: Number(req.body.category),
                 counter: Number(req.body.counter),
                 picture: req.body.picture,
+                price: req.body.price,
             },
         });
 
@@ -408,6 +409,7 @@ module.exports = new (class extends BaseController {
                 category_id: Number(req.body.category) || book.category,
                 counter: Number(req.body.counter) || book.counter,
                 picture: req.body.picture || book.picture,
+                price: req.body.price || book.price,
             },
         });
 

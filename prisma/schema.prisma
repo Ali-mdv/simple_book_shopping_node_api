@@ -59,6 +59,7 @@ model Book {
   category_id Int
   counter     Int
   picture     String
+  price       Decimal       @db.Money
   OrderDetail OrderDetail[]
 }
 

@@ -95,5 +95,14 @@ inquirer.prompt(questions).then(async (answers) => {
             is_staff: true,
         },
     });
+    const newcostomer = await prisma.costomer.create({
+        data: {
+            id: newAdmin.id,
+            first: newAdmin.first,
+            last: newAdmin.last,
+            email: newAdmin.email,
+            phone_number: newAdmin.phone_number,
+        },
+    });
     console.log(newAdmin);
 });
