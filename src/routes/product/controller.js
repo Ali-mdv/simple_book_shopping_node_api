@@ -40,4 +40,39 @@ module.exports = new (class extends BaseController {
             data: product,
         });
     }
+
+    async addProductToCart(req, res, next) {
+        const book = await this.prisma.book.findUnique({
+            where: {
+                slug: req.params.slug,
+            },
+        });
+
+        let order = await this.prisma.order.findFirst({
+            where: {
+                costomer_id: req.user.id,
+                is_paid: false,
+            },
+        });
+        if (!order) {
+            order = await this.prisma.order.create({
+                data: {
+                    costomer_id: req.user.id,
+                },
+            });
+        }
+        const orderDetail = await this.prisma.orderDetail.create({
+            data: {
+                order_id: order.id,
+                book_id: book.id,
+                price: book.price,
+                count: req.body.count,
+            },
+        });
+        this.response({
+            res,
+            message: `added ${book.title} to order`,
+            data: orderDetail,
+        });
+    }
 })();
