@@ -49,16 +49,17 @@ model Category {
 }
 
 model Book {
-  id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(64)
-  slug        String   @unique @db.VarChar(64)
-  description String?  @db.VarChar(256)
-  author      Author   @relation(fields: [author_id], references: [id])
+  id          Int           @id @default(autoincrement())
+  title       String        @db.VarChar(64)
+  slug        String        @unique @db.VarChar(64)
+  description String?       @db.VarChar(256)
+  author      Author        @relation(fields: [author_id], references: [id])
   author_id   Int
-  category    Category @relation(fields: [category_id], references: [id])
+  category    Category      @relation(fields: [category_id], references: [id])
   category_id Int
   counter     Int
   picture     String
+  OrderDetail OrderDetail[]
 }
 
 model Costomer {
@@ -68,6 +69,7 @@ model Costomer {
   email        String    @unique @db.VarChar(60)
   phone_number String    @unique @db.VarChar(16)
   addresses    Address[]
+  Order        Order[]
 }
 
 model Address {
@@ -79,4 +81,25 @@ model Address {
   postal_code String    @db.VarChar(40)
   costomer    Costomer? @relation(fields: [costomer_id], references: [id])
   costomer_id String?
+}
+
+model Order {
+  id           String        @id @default(uuid())
+  costomer     Costomer      @relation(fields: [costomer_id], references: [id])
+  costomer_id  String
+  is_paid      Boolean?      @default(false)
+  paid_at      DateTime?
+  payment_code String?
+  created_at   DateTime?     @default(now())
+  order_detail OrderDetail[]
+}
+
+model OrderDetail {
+  id       String  @id @default(uuid())
+  order    Order   @relation(fields: [order_id], references: [id])
+  order_id String
+  book     Book    @relation(fields: [book_id], references: [id])
+  book_id  Int
+  price    Decimal @db.Money
+  count    Int
 }
