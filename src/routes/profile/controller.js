@@ -152,4 +152,72 @@ module.exports = new (class extends BaseController {
             code: 204,
         });
     }
+
+    ///////////////////////////////////////////////////////////////
+    //controller for order model
+    async orderList(req, res, next) {
+        const orders = await this.prisma.order.findMany({
+            where: {
+                costomer_id: req.user.id,
+            },
+        });
+        this.response({
+            res,
+            message: "List of user orders",
+            data: orders,
+        });
+    }
+
+    async orderSingle(req, res, next) {
+        const orderDetail = await this.prisma.orderDetail.findMany({
+            where: {
+                order_id: req.params.id,
+            },
+            include: {
+                book: true,
+            },
+        });
+        if (!orderDetail) return next();
+
+        this.response({
+            res,
+            message: "Detail user order",
+            data: orderDetail,
+        });
+    }
+
+    // delete item in active order
+    async deleteDetailOrder(req, res, next) {
+        const order = await this.prisma.order.findFirst({
+            where: {
+                id: req.params.id,
+                is_paid: false,
+            },
+        });
+
+        // if order does not exit return 404
+        if (!order) return next();
+
+        const orderDetail = await this.prisma.orderDetail.findFirst({
+            where: {
+                id: req.body.detail_id,
+                order_id: req.params.id,
+            },
+        });
+
+        // if item does not exit return 404
+        if (!orderDetail) return next();
+
+        //delete item from active order list
+        await this.prisma.orderDetail.delete({
+            where: {
+                id: req.body.detail_id,
+            },
+        });
+
+        this.response({
+            res,
+            code: 204,
+        });
+    }
 })();

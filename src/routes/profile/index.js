@@ -17,7 +17,7 @@ router.post(
 
 
 ///////////////////////////////////////////////////////////////
-// get-update-delete user model
+// get-update-delete address model for each user
 router.get(
     "/addresses",
     controller.addressList
@@ -47,5 +47,25 @@ router.delete(
     controller.addressDelete
 );
 
+
+///////////////////////////////////////////////////////////////
+// get-update-delete order model for each user
+router.get(
+    "/orders",
+    controller.orderList
+);
+
+router.get(
+    "/order/:id",
+    controller.orderSingle
+);
+
+// delete item from active order list 
+router.delete(
+    "/order/:id",
+    validator.deleteDetailOrder(),
+    controller.validate,
+    controller.deleteDetailOrder
+);
 
 module.exports = router;

@@ -77,4 +77,17 @@ module.exports = new (class {
                 .withMessage("max character for Postal Code is 40"),
         ];
     }
+
+    ///////////////////////////////////////////////////////////////
+    //validator for order detail model
+    deleteDetailOrder() {
+        return [
+            check("detail_id")
+                .notEmpty()
+                .withMessage("detail_id not provided")
+                .bail()
+                .isUUID()
+                .withMessage("detail_id format is wrong"),
+        ];
+    }
 })();
